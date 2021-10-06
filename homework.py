@@ -1,4 +1,4 @@
-"""Return the pathname of the KOS root directory."""
+"""Определяет калькулятор калорий и денежный калькулятор."""
 from typing import Dict, Optional, List, Tuple
 import datetime as dt
 
@@ -53,11 +53,10 @@ class Calculator:
 
     def get_week_stats(self) -> int:
         """Итерируется по списку трат и возращает сумму трат за неделю."""
-        days_in_week = 7
         week_stats = 0
         if len(self.records) != 0:
             # week_ago - вычисляем дату которая была неделю назад
-            week_ago = dt.date.today() - dt.timedelta(days=days_in_week)
+            week_ago = dt.date.today() - dt.timedelta(days=7)
             for record in self.records:
                 # сауммируем траты за прошедшую неделю
                 if dt.date.today() >= record.date >= week_ago:
@@ -89,7 +88,7 @@ class CaloriesCalculator(Calculator):
 
 
 class CashCalculator(Calculator):
-    """CashCalculator хранит записи о тратах."""
+    """Денежный калькулятор CashCalculator хранит записи о тратах."""
 
     USD_RATE = 60.0
     EURO_RATE = 70.0
