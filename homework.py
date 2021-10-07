@@ -48,22 +48,23 @@ class Calculator:
         today_stats = 0
         for record in self.records:
             if record.date.day == today.day:
-                today_stats = today_stats + record.amount
+                today_stats += record.amount
         return today_stats
 
     def get_week_stats(self) -> int:
         """Итерируется по списку трат и возращает сумму трат за неделю."""
         week_stats = 0
-        if len(self.records) != 0:
-            # week_ago - вычисляем дату которая была неделю назад
-            week_ago = dt.date.today() - dt.timedelta(days=7)
-            for record in self.records:
-                # сауммируем траты за прошедшую неделю
-                if dt.date.today() >= record.date >= week_ago:
-                    week_stats = week_stats + record.amount
-            return week_stats
-        else:
-            return week_stats
+        # week_ago - вычисляем дату которая была неделю назад
+        week_ago = dt.date.today() - dt.timedelta(days=7)
+        for record in self.records:
+            # сауммируем траты за прошедшую неделю
+            if dt.date.today() >= record.date >= week_ago:
+                week_stats = week_stats + record.amount
+        return week_stats
+
+    def get_remained(self) -> int:
+        """Возвращает разницу между лимитом и суммой трат за день."""
+        return self.limit - self.get_today_stats()
 
 
 class CaloriesCalculator(Calculator):
@@ -77,11 +78,10 @@ class CaloriesCalculator(Calculator):
         не более {remained_calories} кКал'
         Возврашает сообщение 'Хватит есть!', если превышен лимит по калориям
         """
-        today_calories: int = self.get_today_stats()
-        if today_calories < self.limit:
-            remained_calories = self.limit - today_calories
-            return (f'Сегодня можно съесть что-нибудь ещё,'
-                    f' но с общей калорийностью не более '
+        remained_calories = self.get_remained()
+        if remained_calories > 0:
+            return ('Сегодня можно съесть что-нибудь ещё,'
+                    ' но с общей калорийностью не более '
                     f'{remained_calories} кКал')
         else:
             return 'Хватит есть!'
@@ -107,24 +107,15 @@ class CashCalculator(Calculator):
         Если есть долг, выводит
         'Денег нет, держись: твой долг - {debt} {code}'
         """
-        today_stats = self.get_today_stats() / self.currencies[currency][1]
-        limit = self.limit / self.currencies[currency][1]
+        today_stats = self.get_remained() / self.currencies[currency][1]
 
-        if today_stats < limit:
-            today_stats = limit - today_stats
-            # округляем число до сотых, храним как строку
-            today_stats = "{:.2f}".format(today_stats)
+        if today_stats > 0:
+            today_stats = round(today_stats, 2)
             code = self.currencies[currency][0]
             return f'На сегодня осталось {today_stats} {code}'
-        elif today_stats > limit:
-            debt = today_stats - limit
-            # округляем число до сотых, храним как строку
-            debt = "{:.2f}".format(debt)
+        elif today_stats < 0:
+            debt = -1 * round(today_stats, 2)
             code = self.currencies[currency][0]
             return f'Денег нет, держись: твой долг - {debt} {code}'
         else:
             return 'Денег нет, держись'
-
-
-if __name__ == '__main__':
-    pass
