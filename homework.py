@@ -108,14 +108,12 @@ class CashCalculator(Calculator):
         'Денег нет, держись: твой долг - {debt} {code}'
         """
         today_stats = self.get_remained() / self.currencies[currency][1]
-
+        code = self.currencies[currency][0]
         if today_stats > 0:
             today_stats = round(today_stats, 2)
-            code = self.currencies[currency][0]
             return f'На сегодня осталось {today_stats} {code}'
         elif today_stats < 0:
             debt = -1 * round(today_stats, 2)
-            code = self.currencies[currency][0]
             return f'Денег нет, держись: твой долг - {debt} {code}'
         else:
             return 'Денег нет, держись'
