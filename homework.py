@@ -57,7 +57,7 @@ class Calculator:
         for record in self.records:
             # сауммируем траты за прошедшую неделю
             if dt.date.today() >= record.date >= week_ago:
-                week_stats = week_stats + record.amount
+                week_stats += record.amount
         return week_stats
 
     def get_remained(self) -> int:
@@ -111,7 +111,7 @@ class CashCalculator(Calculator):
             today_stats = round(today_stats, 2)
             return f'На сегодня осталось {today_stats} {code}'
         elif today_stats < 0:
-            debt = -1 * round(today_stats, 2)
+            debt = abs(round(today_stats, 2))
             return f'Денег нет, держись: твой долг - {debt} {code}'
         else:
             return 'Денег нет, держись'
