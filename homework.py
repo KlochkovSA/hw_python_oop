@@ -45,8 +45,8 @@ class Calculator:
     def get_today_stats(self) -> int:
         """Итерируется по списку трат и возращает сумму трат за сегодня."""
         today = dt.date.today()
-        today_stats = sum([record.amount for record in self.records
-                           if record.date.day == today.day])
+        today_stats = sum(record.amount for record in self.records
+                          if record.date.day == today.day)
         return today_stats
 
     def get_week_stats(self) -> int:
